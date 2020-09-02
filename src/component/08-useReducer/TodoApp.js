@@ -1,7 +1,8 @@
 import React, { useReducer, useEffect } from 'react'
 import './styles.css'
 import { todoReducer } from './todoReducer'
-import useForm from '../../hooks/useForm'
+import { TodoList } from './TodoList'
+import { TodoAdd } from './TodoAdd'
 
 
 
@@ -20,17 +21,12 @@ export const TodoApp = () => {
     // El init se usa como una funcion para inicializar el starte en caso de q el state sea procesado o tenga varias acciones
     // El dispatch ayuda a poder disparar las acciones hacia mi reducer. Es una funcion que le mandamos una acción 
     // init me va a ayudar a react a computar todo el estado inicial para que funcione ams rapido el componente y esa funcion no se ejecute cada vez que haya cambios
-    const [{ description }, handleInputChange, reset] = useForm({ //desestructuro description de formValues
-        description: '',
-    });
 
     useEffect(() => {
         localStorage.setItem('todos', JSON.stringify(todos)) //El problema de localstorage es que soolo guarda string por eso uso JSON
     }, [todos]) //[todos] dependencia que si cambia significa que tengo que volver a grabar en localstorage
 
     const handleDelete = (todoId) => {
-
-        console.log(todoId)
 
         const action = {
             type: 'delete',
@@ -40,26 +36,18 @@ export const TodoApp = () => {
         dispatch(action);
     }
 
-    const handleSubmit = (e) => {
-        e.preventDefault();
+    const handleToggle = (todoId) => {
+        dispatch({
+            type: 'toggle',
+            payload: todoId
+        })
+    }
 
-        if (description.trim().length <= 1) { // Esta es una validación para que no agregue un string vacio
-            return;
-        }
-
-        const newTodo = {
-            id: new Date().getTime(),
-            desc: description,
-            donde: false
-        };
-
-        const action = {
+    const handleAddTodo = (newTodo) => {
+        dispatch({
             type: 'add',
             payload: newTodo
-        }
-
-        dispatch(action);
-        reset();
+        });
     }
 
     return (
@@ -71,53 +59,19 @@ export const TodoApp = () => {
 
                 <div className="col-7">
 
-                    <ul className="list-group list-group-flush">
-                        {
-                            todos.map((todo, i) => (
-                                <li
-                                    key={todo.id}
-                                    className="list-group-item"
-                                >
-                                    <p className="text-center">{i + 1}.  {todo.desc}</p>
-                                    <button
-                                        className="btn btn-danger"
-                                        onClick={() => handleDelete(todo.id)}
-                                        type="submit"
-                                    >
-                                        Borrar
-                            </button>
-                                </li>
-                            ))
-                        }
-
-                    </ul>
+                    <TodoList
+                        todos={todos}
+                        handleDelete={handleDelete}
+                        handleToggle={handleToggle}
+                    />
 
                 </div>
 
                 <div className="col-5">
 
-                    <h4>Agregar TODO</h4>
-                    <hr />
-
-                    <form onSubmit={handleSubmit}>
-
-                        <input
-                            type="text"
-                            name="description"
-                            className="form-control"
-                            placeholder="Aprender ..."
-                            autoComplete="off"
-                            value={description}
-                            onChange={handleInputChange}
-                        />
-                        <button
-                            type="submit"
-                            className="btn btn-outline-primary mt-1 btn-block"
-                        >
-                            Agregar
-                            </button>
-                    </form>
-
+                    <TodoAdd
+                        handleAddTodo={handleAddTodo}
+                    />
 
                 </div>
             </div>
