@@ -10,6 +10,10 @@ const useForm = (initialState = {}) => { // Mando como objeto vacio porque si no
     //     password: ''
     // });
 
+    const reset = () => {
+        setValues(initialState)
+    }
+
     const handleInputChange = ({ target }) => {
 
         setValues({
@@ -19,7 +23,7 @@ const useForm = (initialState = {}) => { // Mando como objeto vacio porque si no
 
     }
 
-    return [values, handleInputChange];
+    return [values, handleInputChange, reset];
 
 }
 

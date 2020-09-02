@@ -1,25 +1,55 @@
-import React, { useReducer } from 'react'
+import React, { useReducer, useEffect } from 'react'
 import './styles.css'
-import { todoReducer } from './todoReduce'
+import { todoReducer } from './todoReducer'
+import useForm from '../../hooks/useForm'
 
 
-const initialState = [{
-    id: new Date().getTime(),
-    desc: 'Aprender React',
-    donde: false
-}]
+
+const init = () => {
+    // Si hay todos traelos, pero esto puede regresar null y si trae null uso || para retornar un arreglo vacio 
+    return JSON.parse(localStorage.getItem('todos')) || [];
+    // return [{
+    //     id: new Date().getTime(),
+    //     desc: 'Aprender React',
+    //     donde: false
+    // }]
+}
 export const TodoApp = () => {
 
-    const [todos, dispatch] = useReducer(todoReducer, initialState)
+    const [todos, dispatch] = useReducer(todoReducer, [], init)
     // El init se usa como una funcion para inicializar el starte en caso de q el state sea procesado o tenga varias acciones
     // El dispatch ayuda a poder disparar las acciones hacia mi reducer. Es una funcion que le mandamos una acción 
+    // init me va a ayudar a react a computar todo el estado inicial para que funcione ams rapido el componente y esa funcion no se ejecute cada vez que haya cambios
+    const [{ description }, handleInputChange, reset] = useForm({ //desestructuro description de formValues
+        description: '',
+    });
+
+    useEffect(() => {
+        localStorage.setItem('todos', JSON.stringify(todos)) //El problema de localstorage es que soolo guarda string por eso uso JSON
+    }, [todos]) //[todos] dependencia que si cambia significa que tengo que volver a grabar en localstorage
+
+    const handleDelete = (todoId) => {
+
+        console.log(todoId)
+
+        const action = {
+            type: 'delete',
+            payload: todoId
+        }
+
+        dispatch(action);
+    }
 
     const handleSubmit = (e) => {
         e.preventDefault();
 
+        if (description.trim().length <= 1) { // Esta es una validación para que no agregue un string vacio
+            return;
+        }
+
         const newTodo = {
             id: new Date().getTime(),
-            desc: 'Nueva tarea',
+            desc: description,
             donde: false
         };
 
@@ -29,6 +59,7 @@ export const TodoApp = () => {
         }
 
         dispatch(action);
+        reset();
     }
 
     return (
@@ -50,6 +81,8 @@ export const TodoApp = () => {
                                     <p className="text-center">{i + 1}.  {todo.desc}</p>
                                     <button
                                         className="btn btn-danger"
+                                        onClick={() => handleDelete(todo.id)}
+                                        type="submit"
                                     >
                                         Borrar
                             </button>
@@ -70,10 +103,12 @@ export const TodoApp = () => {
 
                         <input
                             type="text"
-                            name="descrption"
+                            name="description"
                             className="form-control"
                             placeholder="Aprender ..."
                             autoComplete="off"
+                            value={description}
+                            onChange={handleInputChange}
                         />
                         <button
                             type="submit"
