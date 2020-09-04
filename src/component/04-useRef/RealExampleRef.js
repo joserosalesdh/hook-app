@@ -1,6 +1,6 @@
 import React, { useState } from 'react'
 import '../02-useEffect/effects.css'
-import { MultipleCustonHooks } from '../03-examples/MultipleCustonHooks'
+import { MultipleCustomHooks } from '../03-examples/MultipleCustomHooks'
 
 export const RealExampleRef = () => {
 
@@ -11,7 +11,7 @@ export const RealExampleRef = () => {
             <h1>RealExampleRef</h1>
             <hr />
 
-            {show && <MultipleCustonHooks />}
+            {show && <MultipleCustomHooks />}
 
             <button
                 className="btn btn-primay mt-5"
