@@ -57,7 +57,6 @@ describe('Pruebas en todoReducer', () => {
         expect(state[0].done).toBe(true); // Ver si cambio el primer elemento
         expect(state[1]).toEqual(demoTodos[1]); // Asegurarme de que no cambio el segundo elemento
 
-
     })
 
 
